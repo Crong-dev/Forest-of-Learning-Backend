@@ -1,4 +1,5 @@
 {
+  "name": "forest-of-learning-backend",
   "type": "module",
   "scripts": {
     "dev": "nodemon src/app.js",
