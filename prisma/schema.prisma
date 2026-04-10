@@ -1,0 +1,93 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Study {
+  id            Int             @id @default(autoincrement())
+  nickname      String
+  name          String
+  description   String
+  password      String
+  backgroundId  Int
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  background     Background      @relation(fields: [backgroundId], references: [id], onDelete: Restrict)
+  point          Point?
+  habits         Habit[]
+  focusSessions  FocusSession[]
+  emojiReactions EmojiReaction[]
+}
+
+model Point {
+  id         Int      @id @default(autoincrement())
+  studyId    Int      @unique
+  totalPoint Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  study Study @relation(fields: [studyId], references: [id], onDelete: Cascade)
+}
+
+model Background {
+  id        Int      @id @default(autoincrement())
+  name      String
+  imageUrl  String
+  createdAt DateTime @default(now())
+
+  studies Study[]
+}
+
+model Habit {
+  id         Int      @id @default(autoincrement())
+  studyId    Int
+  name       String
+  isEnded    Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  study        Study         @relation(fields: [studyId], references: [id], onDelete: Cascade)
+  habitRecords HabitRecord[]
+}
+
+model HabitRecord {
+  id        Int      @id @default(autoincrement())
+  habitId   Int
+  date      DateTime
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  habit Habit @relation(fields: [habitId], references: [id], onDelete: Cascade)
+
+  @@unique([habitId, date])
+}
+
+model FocusSession {
+  id          Int      @id @default(autoincrement())
+  studyId     Int
+  duration    Int
+  earnedPoint Int      @default(0)
+  startedAt   DateTime
+  completedAt DateTime
+
+  study Study @relation(fields: [studyId], references: [id], onDelete: Cascade)
+}
+
+model EmojiReaction {
+  id        Int      @id @default(autoincrement())
+  studyId   Int
+  emoji     String
+  createdAt DateTime @default(now())
+
+  study Study @relation(fields: [studyId], references: [id], onDelete: Cascade)
+}
