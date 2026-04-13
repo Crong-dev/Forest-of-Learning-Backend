@@ -2,8 +2,16 @@ import prisma from '../lib/prisma.js';
 
 export const createStudy = async (data) => {
   return await prisma.study.create({
-    data,
-    include: { background: true, point: true },
+    data: {
+      ...data,
+      point: {
+        create: {},
+      },
+    },
+    include: {
+      background: true,
+      point: true,
+    },
   });
 };
 
