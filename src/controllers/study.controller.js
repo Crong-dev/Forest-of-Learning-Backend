@@ -19,8 +19,14 @@ export const createStudy = async (req, res, next) => {
 
 export const getStudies = async (req, res, next) => {
   try {
-    const items = await studyService.findAllStudies();
-    success(res, { items });
+    const { page = 1, limit = 10, keyword = '', order = 'latest' } = req.query;
+    const result = await studyService.findAllStudies({
+      page: Number(page),
+      limit: Number(limit),
+      keyword,
+      order,
+    });
+    success(res, result);
   } catch (err) {
     next(err);
   }
