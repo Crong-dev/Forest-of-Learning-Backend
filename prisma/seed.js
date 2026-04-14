@@ -51,7 +51,11 @@ async function main() {
       },
 
       emojiReactions: {
-        create: [{ emoji: '🔥' }, { emoji: '👏' }, { emoji: '💪' }],
+        create: [
+          { emoji: '🔥', count: 2 },
+          { emoji: '👏', count: 1 },
+          { emoji: '💪', count: 4 },
+        ],
       },
     },
   });
@@ -75,7 +79,10 @@ async function main() {
       },
 
       emojiReactions: {
-        create: [{ emoji: '🚀' }, { emoji: '👍' }],
+        create: [
+          { emoji: '🚀', count: 5 },
+          { emoji: '👍', count: 3 },
+        ],
       },
     },
   });
