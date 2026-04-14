@@ -4,9 +4,14 @@ const prisma = new PrismaClient();
 async function main() {
   await prisma.background.createMany({
     data: [
-      { name: 'forest', imageUrl: '/images/forest.png' },
-      { name: 'night', imageUrl: '/images/night.png' },
-      { name: 'ocean', imageUrl: '/images/ocean.png' },
+      { name: 'green', imageUrl: '/images/green.png' },
+      { name: 'yellow', imageUrl: '/images/yellow.png' },
+      { name: 'blue', imageUrl: '/images/blue.png' },
+      { name: 'pink', imageUrl: '/images/pink.png' },
+      { name: 'workspace', imageUrl: '/images/workspace.png' },
+      { name: 'desk', imageUrl: '/images/desk.png' },
+      { name: 'pattern', imageUrl: '/images/pattern.png' },
+      { name: 'leaf', imageUrl: '/images/leaf.png' },
     ],
   });
   console.log('Seed 완료');
