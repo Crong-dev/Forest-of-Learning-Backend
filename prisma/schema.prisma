@@ -76,6 +76,8 @@ model EmojiReaction {
   id        Int      @id @default(autoincrement())
   studyId   Int
   emoji     String
+  count     Int
   createdAt DateTime @default(now())
   study     Study    @relation(fields: [studyId], references: [id], onDelete: Cascade)
+  @@unique([studyId, emoji])
 }
