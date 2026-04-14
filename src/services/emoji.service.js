@@ -1,7 +1,22 @@
 import prisma from '../lib/prisma.js';
 
-export const createEmojiReaction = async (data) => {
-  return await prisma.emojiReaction.create({ data });
+export const addEmojiReaction = async (data) => {
+  const { studyId, emoji } = data;
+
+  return await prisma.emojiReaction.upsert({
+    where: {
+      studyId_emoji: {
+        studyId: Number(studyId),
+        emoji: emoji,
+      },
+    },
+    update: { count: { increment: 1 } },
+    create: {
+      studyId: Number(studyId),
+      emoji: emoji,
+      count: 1,
+    },
+  });
 };
 
 export const findEmojiReactionsByStudyId = async (studyId) => {
