@@ -19,8 +19,14 @@ export const createStudy = async (req, res, next) => {
 
 export const getStudies = async (req, res, next) => {
   try {
-    const items = await studyService.findAllStudies();
-    success(res, { items });
+    const { page = 1, limit = 10, keyword = '', order = 'latest' } = req.query;
+    const result = await studyService.findAllStudies({
+      page: Number(page),
+      limit: Number(limit),
+      keyword,
+      order,
+    });
+    success(res, result);
   } catch (err) {
     next(err);
   }
@@ -30,7 +36,8 @@ export const getStudyById = async (req, res, next) => {
   try {
     const { studyId } = req.params;
     const study = await studyService.findStudyById(Number(studyId));
-    if (!study) return fail(res, 'NOT_FOUND', '스터디를 찾을 수 없습니다.', 404);
+    if (!study)
+      return fail(res, 'NOT_FOUND', '스터디를 찾을 수 없습니다.', 404);
     success(res, study);
   } catch (err) {
     next(err);
