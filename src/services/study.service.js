@@ -64,7 +64,21 @@ export const findAllStudies = async ({ page, limit, keyword, order }) => {
 export const findStudyById = async (id) => {
   return await prisma.study.findUnique({
     where: { id },
-    include: { background: true, point: true, habits: true },
+    select: {
+      id: true,
+      nickname: true,
+      name: true,
+      description: true,
+      background: {
+        select: {
+          id: true,
+          name: true,
+          imageUrl: true,
+        },
+      },
+      createdAt: true,
+      updatedAt: true,
+    },
   });
 };
 
