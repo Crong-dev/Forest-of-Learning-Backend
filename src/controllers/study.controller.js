@@ -37,7 +37,7 @@ export const getStudyById = async (req, res, next) => {
     const { studyId } = req.params;
     const study = await studyService.findStudyById(Number(studyId));
     if (!study)
-      return fail(res, 'NOT_FOUND', '스터디를 찾을 수 없습니다.', 404);
+      return fail(res, 'NOT_FOUND', '해당 스터디를 찾을 수 없습니다.', 404);
     success(res, study);
   } catch (err) {
     next(err);
