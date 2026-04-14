@@ -15,11 +15,50 @@ export const createStudy = async (data) => {
   });
 };
 
-export const findAllStudies = async () => {
-  return await prisma.study.findMany({
-    include: { background: true, point: true },
-    orderBy: { createdAt: 'desc' },
+export const findAllStudies = async ({ page, limit, keyword, order }) => {
+  const skip = (page - 1) * limit;
+
+  const orderBy =
+    order === 'oldest' ? { createdAt: 'asc' } : { createdAt: 'desc' };
+
+  const where = keyword
+    ? {
+        OR: [
+          { name: { contains: keyword, mode: 'insensitive' } },
+          { nickname: { contains: keyword, mode: 'insensitive' } },
+        ],
+      }
+    : {};
+
+  const totalCount = await prisma.study.count({ where });
+
+  const items = await prisma.study.findMany({
+    where,
+    select: {
+      id: true,
+      nickname: true,
+      name: true,
+      description: true,
+      createdAt: true,
+      background: {
+        select: {
+          id: true,
+          name: true,
+          imageUrl: true,
+        },
+      },
+    },
+    orderBy,
+    skip,
+    take: limit,
   });
+
+  return {
+    items,
+    totalCount,
+    page,
+    limit,
+  };
 };
 
 export const findStudyById = async (id) => {
