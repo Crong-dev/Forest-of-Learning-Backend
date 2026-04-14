@@ -1,29 +1,58 @@
-import * as focusService from '../services/focus.service.js';
-import { success, fail } from '../utils/response.js';
+import {
+  findFocusByStudyId,
+  createFocusSessionByStudyId,
+} from '../services/focus.service.js';
+import response from '../utils/response.js';
 
-export const createFocusSession = async (req, res, next) => {
+export async function getFocusByStudyId(req, res, next) {
   try {
-    const { studyId, duration, earnedPoint, startedAt, completedAt } = req.body;
-    const session = await focusService.createFocusSession({
-      studyId: Number(studyId),
-      duration: Number(duration),
-      earnedPoint: Number(earnedPoint),
-      startedAt: new Date(startedAt),
-      completedAt: new Date(completedAt),
+    const studyId = Number(req.params.studyId);
+
+    if (Number.isNaN(studyId)) {
+      return res
+        .status(400)
+        .json(response({ message: '유효한 studyId가 아닙니다.' }));
+    }
+
+    const data = await findFocusByStudyId(studyId);
+
+    return res.status(200).json(response({ data, message: 'focus 조회 성공' }));
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function createFocusSession(req, res, next) {
+  try {
+    const studyId = Number(req.params.studyId);
+    const { duration, earnedPoint, startedAt, completedAt } = req.body;
+
+    if (Number.isNaN(studyId)) {
+      return res
+        .status(400)
+        .json(response({ message: '유효한 studyId가 아닙니다.' }));
+    }
+
+    if (duration == null || earnedPoint == null || !startedAt || !completedAt) {
+      return res.status(400).json(
+        response({
+          message:
+            'duration, earnedPoint, startedAt, completedAt는 필수입니다.',
+        })
+      );
+    }
+
+    const data = await createFocusSessionByStudyId(studyId, {
+      duration,
+      earnedPoint,
+      startedAt,
+      completedAt,
     });
-    success(res, session, 'created', 201);
-  } catch (err) {
-    next(err);
-  }
-};
 
-export const getFocusSessions = async (req, res, next) => {
-  try {
-    const { studyId } = req.query;
-    if (!studyId) return fail(res, 'BAD_REQUEST', 'studyId가 필요합니다.', 400);
-    const items = await focusService.findFocusSessionsByStudyId(Number(studyId));
-    success(res, { items });
-  } catch (err) {
-    next(err);
+    return res
+      .status(201)
+      .json(response({ data, message: 'focus 세션 저장 성공' }));
+  } catch (error) {
+    next(error);
   }
-};
+}
