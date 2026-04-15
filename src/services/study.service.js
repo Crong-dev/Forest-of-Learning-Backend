@@ -99,7 +99,19 @@ export const updateStudy = async (id, data) => {
   });
 };
 
-export const deleteStudy = async (id) => {
+export const deleteStudy = async (id, password) => {
+  const study = await prisma.study.findUnique({
+    where: { id },
+  });
+
+  if (!study) {
+    return { error: 'NOT_FOUND' };
+  }
+
+  if (study.password !== password) {
+    return { error: 'INVALID_PASSWORD' };
+  }
+
   return await prisma.study.delete({
     where: { id },
   });
