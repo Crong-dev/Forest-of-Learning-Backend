@@ -26,7 +26,7 @@ export async function findFocusByStudyId(studyId) {
 
 export async function createFocusSessionByStudyId(
   studyId,
-  { sessionData }
+  { sessionData, completedAt }
 ) {
   const study = await prisma.study.findUnique({
     where: { id: studyId },
@@ -39,16 +39,21 @@ export async function createFocusSessionByStudyId(
     throw error;
   }
 
-  // 백단에서 completedAt 생성
+  // 백단에서 completedAt 생성 (프론트의 값은 무시)
   const serverCompletedAt = new Date();
 
   // 백단에서 포인트 계산
   const durationMinutes = sessionData.durationMinutes;
   const actualMinutes = calculateActualMinutes(sessionData, serverCompletedAt);
 
-  // 1차 보상: 설정 시간 완료 시 3점
-  const firstRewardPoint = actualMinutes >= durationMinutes ? 3 : 0;
-
+  // 1차 보상: 설정 시간 완료 시 3점 + 초과 10분당 1점
+  let firstRewardPoint = 0;
+  if (actualMinutes >= durationMinutes) {
+    firstRewardPoint = 3 + Math.floor(actualMinutes / 10);
+  }
+  else {
+    firstRewardPoint = 0;
+  }
   // 2차 보상: 초과 10분당 1점
   const overtimeMinutes = Math.max(actualMinutes - durationMinutes, 0);
   const overtimePoint = Math.floor(overtimeMinutes / 10);
