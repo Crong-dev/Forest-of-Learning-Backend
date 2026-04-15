@@ -46,15 +46,12 @@ export async function createFocusSessionByStudyId(
   const durationMinutes = sessionData.durationMinutes;
   const actualMinutes = calculateActualMinutes(sessionData, serverCompletedAt);
 
-  // 1차 보상: 설정 시간 완료 시 3점 + 초과 10분당 1점
-  let firstRewardPoint = 0;
-  if (actualMinutes >= durationMinutes) {
-    firstRewardPoint = 3 + Math.floor(actualMinutes / 10);
-  }
-  else {
-    firstRewardPoint = 0;
-  }
-  // 2차 보상: 초과 10분당 1점
+  // 1차 보상: 설정 시간 완료 시 기본 3점 + 설정시간 10분당 1점
+  const firstRewardPoint = actualMinutes >= durationMinutes
+    ? 3 + Math.floor(durationMinutes / 10)
+    : 0;
+
+  // 2차 보상: 초과 시간 10분당 1점
   const overtimeMinutes = Math.max(actualMinutes - durationMinutes, 0);
   const overtimePoint = Math.floor(overtimeMinutes / 10);
 
@@ -106,5 +103,5 @@ function calculateActualMinutes(sessionData, completedAt) {
   const completedAtMs = completedAt.getTime();
   const totalPausedMs = sessionData.totalPausedMs || 0;
 
-  return Math.round((completedAtMs - startedAt - totalPausedMs) / 60000);
+  return Math.floor((completedAtMs - startedAt - totalPausedMs) / 60000);
 }
