@@ -15,6 +15,6 @@ router.get('/', getHabits);
 router.patch('/:habitId', updateHabit);
 router.delete('/:habitId', deleteHabit);
 router.post('/:habitId/records', upsertHabitRecord);
-router.get('/:habitId/records', getHabitRecords);
+router.get('/:studyId/records', getHabitRecords);
 
 export default router;
