@@ -4,7 +4,10 @@ import { success, fail } from '../utils/response.js';
 export const createHabit = async (req, res, next) => {
   try {
     const { studyId, name } = req.body;
-    const habit = await habitService.createHabit({ studyId: Number(studyId), name });
+    const habit = await habitService.createHabit({
+      studyId: Number(studyId),
+      name,
+    });
     success(res, habit, 'created', 201);
   } catch (err) {
     next(err);
@@ -46,7 +49,11 @@ export const upsertHabitRecord = async (req, res, next) => {
   try {
     const { habitId } = req.params;
     const { date, completed } = req.body;
-    const record = await habitService.upsertHabitRecord(Number(habitId), date, completed);
+    const record = await habitService.upsertHabitRecord(
+      Number(habitId),
+      date,
+      completed
+    );
     success(res, record);
   } catch (err) {
     next(err);
@@ -55,9 +62,14 @@ export const upsertHabitRecord = async (req, res, next) => {
 
 export const getHabitRecords = async (req, res, next) => {
   try {
-    const { habitId } = req.params;
-    const items = await habitService.findHabitRecords(Number(habitId));
-    success(res, { items });
+    const { weekStart, weekEnd } = req.query;
+    const { studyId } = req.params;
+    const items = await habitService.findHabitRecords(
+      Number(studyId),
+      weekStart,
+      weekEnd
+    );
+    success(res, { weekStart, weekEnd, items });
   } catch (err) {
     next(err);
   }
