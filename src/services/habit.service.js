@@ -56,7 +56,7 @@ export const findHabitRecords = async (studyId, weekStart, weekEnd) => {
   });
 
   return habitsWithRecords.map((habit) => {
-    const dates = habit.habitRescords.reduce((acc, record) => {
+    const dates = habit.habitRecords.reduce((acc, record) => {
       const dateKey = record.date.toISOString().split('T')[0];
 
       acc[dateKey] = record.completed;
