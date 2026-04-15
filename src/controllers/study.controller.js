@@ -3,13 +3,30 @@ import { success, fail } from '../utils/response.js';
 
 export const createStudy = async (req, res, next) => {
   try {
-    const { nickname, name, description, password, backgroundId } = req.body;
+    const {
+      nickname,
+      name,
+      description,
+      backgroundId,
+      password,
+      passwordConfirm,
+    } = req.body;
+
+    if (password !== passwordConfirm) {
+      return fail(
+        res,
+        'VALIDATION_ERROR',
+        '비밀번호와 비밀번호 확인이 일치하지 않습니다.',
+        400
+      );
+    }
+
     const study = await studyService.createStudy({
       nickname,
       name,
       description,
-      password,
       backgroundId: Number(backgroundId),
+      password,
     });
     success(res, study, 'created', 201);
   } catch (err) {

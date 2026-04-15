@@ -8,9 +8,19 @@ export const createStudy = async (data) => {
         create: {},
       },
     },
-    include: {
-      background: true,
-      point: true,
+    select: {
+      id: true,
+      nickname: true,
+      name: true,
+      description: true,
+      background: {
+        select: {
+          id: true,
+          name: true,
+          imageUrl: true,
+        },
+      },
+      createdAt: true,
     },
   });
 };
