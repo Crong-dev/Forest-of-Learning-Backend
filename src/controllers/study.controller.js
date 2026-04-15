@@ -74,7 +74,22 @@ export const updateStudy = async (req, res, next) => {
 export const deleteStudy = async (req, res, next) => {
   try {
     const { studyId } = req.params;
-    await studyService.deleteStudy(Number(studyId));
+    const { password } = req.body;
+    const result = await studyService.deleteStudy(Number(studyId), password);
+
+    if (result?.error === 'NOT_FOUND') {
+      return fail(res, 'NOT_FOUND', '스터디가 존재하지 않습니다.', 404);
+    }
+
+    if (result?.error === 'INVALID_PASSWORD') {
+      return fail(
+        res,
+        'VALIDATION_ERROR',
+        '비밀번호가 일치하지 않습니다.',
+        400
+      );
+    }
+
     success(res, null, 'deleted');
   } catch (err) {
     next(err);
