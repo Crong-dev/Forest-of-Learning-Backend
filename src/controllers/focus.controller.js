@@ -23,26 +23,32 @@ export async function getFocusByStudyId(req, res, next) {
 export async function createFocusSession(req, res, next) {
   try {
     const studyId = Number(req.params.studyId);
-    const { duration, earnedPoint, startedAt, completedAt } = req.body;
+    const { sessionData } = req.body;
 
     if (Number.isNaN(studyId)) {
       return fail(res, 'BAD_REQUEST', '유효한 studyId가 아닙니다.', 400);
     }
 
-    if (duration == null || earnedPoint == null || !startedAt || !completedAt) {
+    if (!sessionData) {
       return fail(
         res,
         'BAD_REQUEST',
-        'duration, earnedPoint, startedAt, completedAt는 필수입니다.',
+        'sessionData(durationMinutes, durationSeconds, startedAt, totalPausedMs)는 필수입니다.',
+        400
+      );
+    }
+
+    if (sessionData.durationMinutes == null || sessionData.startedAt == null) {
+      return fail(
+        res,
+        'BAD_REQUEST',
+        'sessionData에는 durationMinutes, startedAt이 필수입니다.',
         400
       );
     }
 
     const data = await createFocusSessionByStudyId(studyId, {
-      duration,
-      earnedPoint,
-      startedAt,
-      completedAt,
+      sessionData,
     });
 
     return success(res, data, 'focus 세션 저장 성공', 201);
