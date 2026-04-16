@@ -96,23 +96,31 @@ export const findStudyById = async (id) => {
   });
 };
 
-export const updateStudy = async (id, password, data) => {
-  const study = await prisma.study.findUnique({ where: { id } });
+export const updateStudy = async (id, data) => {
+  const study = await prisma.study.findUnique({
+    where: { id },
+  });
 
   if (!study) {
     return { error: 'NOT_FOUND' };
   }
 
-  const isMatch = await argon2.verify(study.password, password);
+  const isMatch = await argon2.verify(study.password, data.password);
   if (!isMatch) {
     return { error: 'INVALID_PASSWORD' };
   }
 
-  const { password: _pw, ...safeData } = data;
+  // 불필요한 업데이트 방지
+  const updateData = {
+    ...(data.nickname !== undefined && { nickname: data.nickname }),
+    ...(data.name !== undefined && { name: data.name }),
+    ...(data.description !== undefined && { description: data.description }),
+    ...(data.backgroundId !== undefined && { backgroundId: Number(data.backgroundId) }),
+  };
 
   return await prisma.study.update({
     where: { id },
-    data: safeData,
+    data: updateData,
   });
 };
 

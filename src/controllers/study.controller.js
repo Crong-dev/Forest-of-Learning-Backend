@@ -3,14 +3,7 @@ import { success, fail } from '../utils/response.js';
 
 export const createStudy = async (req, res, next) => {
   try {
-    const {
-      nickname,
-      name,
-      description,
-      backgroundId,
-      password,
-      passwordConfirm,
-    } = req.body;
+    const { nickname, name, description, backgroundId, password } = req.body;
 
     const study = await studyService.createStudy({
       nickname,
@@ -55,8 +48,7 @@ export const getStudyById = async (req, res, next) => {
 export const updateStudy = async (req, res, next) => {
   try {
     const { studyId } = req.params;
-    const { password, ...rest } = req.body;
-    const result = await studyService.updateStudy(Number(studyId), password, rest);
+    const result = await studyService.updateStudy(Number(studyId), req.body);
 
     if (result?.error === 'NOT_FOUND') {
       return fail(res, 'NOT_FOUND', '스터디가 존재하지 않습니다.', 404);
@@ -66,7 +58,7 @@ export const updateStudy = async (req, res, next) => {
       return fail(res, 'VALIDATION_ERROR', '비밀번호가 일치하지 않습니다.', 400);
     }
 
-    success(res, result);
+    success(res, result, '스터디가 수정되었습니다.');
   } catch (err) {
     next(err);
   }
