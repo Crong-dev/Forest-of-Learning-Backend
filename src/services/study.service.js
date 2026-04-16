@@ -1,9 +1,13 @@
+import argon2 from 'argon2';
 import prisma from '../lib/prisma.js';
 
 export const createStudy = async (data) => {
+  const hashedPassword = await argon2.hash(data.password);
+
   return await prisma.study.create({
     data: {
       ...data,
+      password: hashedPassword,
       point: {
         create: {},
       },
@@ -101,12 +105,17 @@ export const updateStudy = async (id, data) => {
     return { error: 'NOT_FOUND' };
   }
 
+  const isMatch = await argon2.verify(study.password, data.password);
+  if (!isMatch) {
+    return { error: 'INVALID_PASSWORD' };
+  }
+
   // 불필요한 업데이트 방지
   const updateData = {
     ...(data.nickname !== undefined && { nickname: data.nickname }),
     ...(data.name !== undefined && { name: data.name }),
     ...(data.description !== undefined && { description: data.description }),
-    ...(data.backgroundId !== undefined && { backgroundId: data.backgroundId }),
+    ...(data.backgroundId !== undefined && { backgroundId: Number(data.backgroundId) }),
   };
 
   return await prisma.study.update({
@@ -136,7 +145,8 @@ export const deleteStudy = async (id, password) => {
     return { error: 'NOT_FOUND' };
   }
 
-  if (study.password !== password) {
+  const isMatch = await argon2.verify(study.password, password);
+  if (!isMatch) {
     return { error: 'INVALID_PASSWORD' };
   }
 
