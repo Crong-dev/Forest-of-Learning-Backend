@@ -1,12 +1,16 @@
 import argon2 from 'argon2';
 import prisma from '../lib/prisma.js';
+import argon2 from 'argon2';
 
 export const createStudy = async (data) => {
   const hashedPassword = await argon2.hash(data.password);
 
   return await prisma.study.create({
     data: {
-      ...data,
+      nickname: data.nickname,
+      name: data.name,
+      description: data.description,
+      backgroundId: Number(data.backgroundId),
       password: hashedPassword,
       point: {
         create: {},
@@ -96,9 +100,35 @@ export const findStudyById = async (id) => {
   });
 };
 
+export const verifyStudyPassword = async (id, password) => {
+  const study = await prisma.study.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      password: true,
+    },
+  });
+
+  if (!study) {
+    return { error: 'NOT_FOUND' };
+  }
+
+  const isMatch = await argon2.verify(study.password, password);
+
+  if (!isMatch) {
+    return { error: 'INVALID_PASSWORD' };
+  }
+
+  return { verified: true };
+};
+
 export const updateStudy = async (id, data) => {
   const study = await prisma.study.findUnique({
     where: { id },
+    select: {
+      id: true,
+      password: true,
+    },
   });
 
   if (!study) {
@@ -139,6 +169,10 @@ export const updateStudy = async (id, data) => {
 export const deleteStudy = async (id, password) => {
   const study = await prisma.study.findUnique({
     where: { id },
+    select: {
+      id: true,
+      password: true,
+    },
   });
 
   if (!study) {
