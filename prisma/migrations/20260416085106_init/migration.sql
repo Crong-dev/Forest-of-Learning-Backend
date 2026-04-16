@@ -74,6 +74,7 @@ CREATE TABLE "EmojiReaction" (
     "studyId" INTEGER NOT NULL,
     "emoji" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "count" INTEGER NOT NULL,
 
     CONSTRAINT "EmojiReaction_pkey" PRIMARY KEY ("id")
 );
@@ -83,6 +84,9 @@ CREATE UNIQUE INDEX "Point_studyId_key" ON "Point"("studyId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "HabitRecord_habitId_date_key" ON "HabitRecord"("habitId", "date");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "EmojiReaction_studyId_emoji_key" ON "EmojiReaction"("studyId", "emoji");
 
 -- AddForeignKey
 ALTER TABLE "Study" ADD CONSTRAINT "Study_backgroundId_fkey" FOREIGN KEY ("backgroundId") REFERENCES "Background"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -120,12 +120,7 @@ export const updateStudy = async (req, res, next) => {
     }
 
     if (result?.error === 'INVALID_PASSWORD') {
-      return fail(
-        res,
-        'VALIDATION_ERROR',
-        '비밀번호가 일치하지 않습니다.',
-        400
-      );
+      return fail(res, 'VALIDATION_ERROR', '비밀번호가 일치하지 않습니다.', 400);
     }
 
     success(res, result, '스터디가 수정되었습니다.');
