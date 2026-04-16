@@ -121,6 +121,18 @@ export const updateStudy = async (id, data) => {
   return await prisma.study.update({
     where: { id },
     data: updateData,
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      background: {
+        select: {
+          id: true,
+          name: true,
+          imageUrl: true,
+        },
+      },
+    },
   });
 };
 
