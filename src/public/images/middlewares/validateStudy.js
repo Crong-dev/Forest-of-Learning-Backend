@@ -1,7 +1,7 @@
 import { fail } from '../utils/response.js';
 
 // 비밀번호 규칙: 4~20자, 영문+숫자 조합
-const PASSWORD_MIN = 5;
+const PASSWORD_MIN = 4;
 const PASSWORD_MAX = 20;
 const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*]{4,20}$/;
 
