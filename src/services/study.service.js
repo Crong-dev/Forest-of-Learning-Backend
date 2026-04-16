@@ -1,6 +1,5 @@
 import argon2 from 'argon2';
 import prisma from '../lib/prisma.js';
-import argon2 from 'argon2';
 
 export const createStudy = async (data) => {
   const hashedPassword = await argon2.hash(data.password);
