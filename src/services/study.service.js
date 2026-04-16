@@ -93,9 +93,37 @@ export const findStudyById = async (id) => {
 };
 
 export const updateStudy = async (id, data) => {
+  const study = await prisma.study.findUnique({
+    where: { id },
+  });
+
+  if (!study) {
+    return { error: 'NOT_FOUND' };
+  }
+
+  // 불필요한 업데이트 방지
+  const updateData = {
+    ...(data.nickname !== undefined && { nickname: data.nickname }),
+    ...(data.name !== undefined && { name: data.name }),
+    ...(data.description !== undefined && { description: data.description }),
+    ...(data.backgroundId !== undefined && { backgroundId: data.backgroundId }),
+  };
+
   return await prisma.study.update({
     where: { id },
-    data,
+    data: updateData,
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      background: {
+        select: {
+          id: true,
+          name: true,
+          imageUrl: true,
+        },
+      },
+    },
   });
 };
 
