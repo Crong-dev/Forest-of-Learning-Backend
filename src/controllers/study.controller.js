@@ -39,13 +39,29 @@ export const createStudy = async (req, res, next) => {
   }
 };
 
+const VALID_ORDERS = ['latest', 'oldest'];
+const MAX_LIMIT = 1000;
+
 export const getStudies = async (req, res, next) => {
   try {
     const { page = 1, limit = 10, keyword = '', order = 'latest' } = req.query;
 
+    const parsedPage = Number(page);
+    const parsedLimit = Number(limit);
+
+    if (!Number.isInteger(parsedPage) || parsedPage < 1) {
+      return fail(res, 'VALIDATION_ERROR', 'page는 1 이상의 정수여야 합니다.', 400);
+    }
+    if (!Number.isInteger(parsedLimit) || parsedLimit < 1 || parsedLimit > MAX_LIMIT) {
+      return fail(res, 'VALIDATION_ERROR', `limit는 1~${MAX_LIMIT} 사이여야 합니다.`, 400);
+    }
+    if (!VALID_ORDERS.includes(order)) {
+      return fail(res, 'VALIDATION_ERROR', `order는 ${VALID_ORDERS.join(', ')} 중 하나여야 합니다.`, 400);
+    }
+
     const result = await studyService.findAllStudies({
-      page: Number(page),
-      limit: Number(limit),
+      page: parsedPage,
+      limit: parsedLimit,
       keyword,
       order,
     });
