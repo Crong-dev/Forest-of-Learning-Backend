@@ -63,6 +63,7 @@ export const getStudies = async (req, res, next) => {
       page: parsedPage,
       limit: parsedLimit,
       keyword,
+    ]
       order,
     });
 
