@@ -35,8 +35,24 @@ export const createStudy = async (data) => {
 export const findAllStudies = async ({ page, limit, keyword, order }) => {
   const skip = (page - 1) * limit;
 
-  const orderBy =
-    order === 'oldest' ? { createdAt: 'asc' } : { createdAt: 'desc' };
+  let orderBy;
+
+  switch (order) {
+    case 'oldest':
+      orderBy = { createdAt: 'asc' };
+      break;
+    case 'latest':
+      orderBy = { createdAt: 'desc' };
+      break;
+    case 'pointDesc':
+      orderBy = { point: { totalPoint: 'desc' } };
+      break;
+    case 'pointAsc':
+      orderBy = { point: { totalPoint: 'asc' } };
+      break;
+    default:
+      orderBy = { createdAt: 'desc' };
+  }
 
   const where = keyword
     ? {
@@ -144,7 +160,9 @@ export const updateStudy = async (id, data) => {
     ...(data.nickname !== undefined && { nickname: data.nickname }),
     ...(data.name !== undefined && { name: data.name }),
     ...(data.description !== undefined && { description: data.description }),
-    ...(data.backgroundId !== undefined && { backgroundId: Number(data.backgroundId) }),
+    ...(data.backgroundId !== undefined && {
+      backgroundId: Number(data.backgroundId),
+    }),
   };
 
   return await prisma.study.update({
