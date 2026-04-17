@@ -18,7 +18,9 @@ export default (err, _req, res, _next) => {
           error: { code: 'FOREIGN_KEY_VIOLATION', message: '참조하는 데이터가 존재하지 않습니다.' },
         });
       default:
-        console.error('[Prisma Known Error]', err.code, err.message);
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('[Prisma Known Error]', err.code, err.message);
+        }
         return res.status(500).json({
           error: { code: 'DB_ERROR', message: '데이터베이스 오류가 발생했습니다.' },
         });
