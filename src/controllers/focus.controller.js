@@ -38,11 +38,28 @@ export async function createFocusSession(req, res, next) {
       );
     }
 
-    if (sessionData.durationMinutes == null || sessionData.startedAt == null) {
+    const { durationMinutes, durationSeconds, startedAt } = sessionData;
+
+    if (durationMinutes == null || durationSeconds == null || startedAt == null) {
       return fail(
         res,
         'BAD_REQUEST',
-        'sessionData에는 durationMinutes, startedAt이 필수입니다.',
+        'sessionData에는 durationMinutes, durationSeconds, startedAt이 필수입니다.',
+        400
+      );
+    }
+
+    if (
+      typeof durationMinutes !== 'number' ||
+      typeof durationSeconds !== 'number' ||
+      durationMinutes < 0 ||
+      durationSeconds < 0 ||
+      durationSeconds >= 60
+    ) {
+      return fail(
+        res,
+        'BAD_REQUEST',
+        'durationMinutes, durationSeconds는 0 이상의 숫자여야 하며 durationSeconds는 60 미만이어야 합니다.',
         400
       );
     }
