@@ -142,7 +142,6 @@ export const updateStudy = async (id, data) => {
     where: { id },
     select: {
       id: true,
-      password: true,
     },
   });
 
@@ -150,12 +149,6 @@ export const updateStudy = async (id, data) => {
     return { error: 'NOT_FOUND' };
   }
 
-  const isMatch = await argon2.verify(study.password, data.password);
-  if (!isMatch) {
-    return { error: 'INVALID_PASSWORD' };
-  }
-
-  // 불필요한 업데이트 방지
   const updateData = {
     ...(data.nickname !== undefined && { nickname: data.nickname }),
     ...(data.name !== undefined && { name: data.name }),
@@ -170,6 +163,7 @@ export const updateStudy = async (id, data) => {
     data: updateData,
     select: {
       id: true,
+      nickname: true,
       name: true,
       description: true,
       background: {
@@ -179,6 +173,7 @@ export const updateStudy = async (id, data) => {
           imageUrl: true,
         },
       },
+      updatedAt: true,
     },
   });
 };

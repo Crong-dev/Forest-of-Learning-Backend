@@ -107,20 +107,21 @@ export const verifyStudyPassword = async (req, res, next) => {
 export const updateStudy = async (req, res, next) => {
   try {
     const { studyId } = req.params;
-    const { password } = req.body;
+    const { nickname, name, description, backgroundId } = req.body;
 
-    if (!password) {
-      return fail(res, 'VALIDATION_ERROR', '비밀번호를 입력해주세요.', 400);
+    if (!nickname || !name || !backgroundId) {
+      return fail(res, 'VALIDATION_ERROR', '필수 항목이 누락되었습니다.', 400);
     }
 
-    const result = await studyService.updateStudy(Number(studyId), req.body);
+    const result = await studyService.updateStudy(Number(studyId), {
+      nickname,
+      name,
+      description,
+      backgroundId,
+    });
 
     if (result?.error === 'NOT_FOUND') {
       return fail(res, 'NOT_FOUND', '스터디가 존재하지 않습니다.', 404);
-    }
-
-    if (result?.error === 'INVALID_PASSWORD') {
-      return fail(res, 'VALIDATION_ERROR', '비밀번호가 일치하지 않습니다.', 400);
     }
 
     success(res, result, '스터디가 수정되었습니다.');
