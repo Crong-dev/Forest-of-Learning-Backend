@@ -1,6 +1,6 @@
 import { fail } from '../utils/response.js';
 
-// 비밀번호 규칙: 4~20자, 영문+숫자 조합
+// 비밀번호 규칙: 5~20자, 영문+숫자 조합
 const PASSWORD_MIN = 5;
 const PASSWORD_MAX = 20;
 const PASSWORD_REGEX = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*]{5,20}$/;
@@ -42,10 +42,15 @@ export const validateCreateStudy = (req, res, next) => {
 };
 
 export const validateUpdateStudy = (req, res, next) => {
-  const { password } = req.body;
+  const { nickname, name, backgroundId } = req.body;
 
-  if (!password) {
-    return fail(res, 'VALIDATION_ERROR', '비밀번호를 입력해 주세요.', 400);
+  if (!nickname || !name || !backgroundId) {
+    return fail(
+      res,
+      'VALIDATION_ERROR',
+      '필수 항목이 누락되었습니다. (nickname, name, backgroundId)',
+      400
+    );
   }
 
   next();
