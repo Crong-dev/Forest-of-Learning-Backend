@@ -1,6 +1,11 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 import errorHandler from './middlewares/errorHandler.js';
 import backgroundRouter from './routes/background.routes.js';
 import studyRouter from './routes/study.routes.js';
@@ -32,6 +37,7 @@ app.use(
   }),
 );
 app.use(express.json());
+app.use('/images', express.static(join(__dirname, 'public/images')));
 
 app.get('/', (_req, res) => {
   res.json({ message: 'Backend server is running.' });
