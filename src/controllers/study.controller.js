@@ -39,7 +39,7 @@ export const createStudy = async (req, res, next) => {
   }
 };
 
-const VALID_ORDERS = ['latest', 'oldest'];
+const VALID_ORDERS = ['latest', 'oldest', 'pointDesc', 'pointAsc'];
 const MAX_LIMIT = 1000;
 
 export const getStudies = async (req, res, next) => {
@@ -55,7 +55,8 @@ export const getStudies = async (req, res, next) => {
     if (!Number.isInteger(parsedLimit) || parsedLimit < 1 || parsedLimit > MAX_LIMIT) {
       return fail(res, 'VALIDATION_ERROR', `limit는 1~${MAX_LIMIT} 사이여야 합니다.`, 400);
     }
-    if (!VALID_ORDERS.includes(order)) {
+    const resolvedOrder = order || 'latest';
+    if (!VALID_ORDERS.includes(resolvedOrder)) {
       return fail(res, 'VALIDATION_ERROR', `order는 ${VALID_ORDERS.join(', ')} 중 하나여야 합니다.`, 400);
     }
 
@@ -63,7 +64,7 @@ export const getStudies = async (req, res, next) => {
       page: parsedPage,
       limit: parsedLimit,
       keyword,
-      order,
+      order: resolvedOrder,
     });
 
     success(res, result);
