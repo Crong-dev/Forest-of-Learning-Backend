@@ -2,8 +2,6 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import errorHandler from './middlewares/errorHandler.js';
-
-import userRoutes from './routes/user.routes.js';
 import backgroundRouter from './routes/background.routes.js';
 import studyRouter from './routes/study.routes.js';
 import habitRouter from './routes/habit.routes.js';
@@ -27,7 +25,6 @@ app.get('/api/test', (_req, res) => {
   res.json({ message: 'API 연결 성공' });
 });
 
-app.use('/users', userRoutes);
 app.use('/backgrounds', backgroundRouter);
 app.use('/studies', studyRouter);
 app.use('/habits', habitRouter);
