@@ -26,10 +26,14 @@ export const getPointLogs = async (req, res, next) => {
 export const addPoints = async (req, res, next) => {
   try {
     const { studyId } = req.params;
-    const { amount, reason = 'ETC', focusSessionId } = req.body;
+    const { amount: rawAmount, reason = 'ETC', focusSessionId } = req.body;
+    const amount = Number(rawAmount);
+    if (!Number.isInteger(amount) || amount <= 0 || amount > 10000) {
+      return fail(res, 'INVALID_INPUT', 'amount는 1 이상 10000 이하의 정수여야 합니다.');
+    }
     const point = await pointService.addPointsWithLog(
       Number(studyId),
-      Number(amount),
+      amount,
       reason,
       focusSessionId
     );
