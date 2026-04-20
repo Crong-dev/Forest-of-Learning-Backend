@@ -1,19 +1,25 @@
 import argon2 from 'argon2';
 import prisma from '../lib/prisma.js';
 
+const toAbsoluteUrl = (imageUrl) => {
+  const base = process.env.API_BASE_URL || `http://localhost:${process.env.PORT || 5000}`;
+  return `${base}${imageUrl}`;
+};
+
+const normalizeBackground = (background) =>
+  background ? { ...background, imageUrl: toAbsoluteUrl(background.imageUrl) } : null;
+
 export const createStudy = async (data) => {
   const hashedPassword = await argon2.hash(data.password);
 
-  return await prisma.study.create({
+  const study = await prisma.study.create({
     data: {
       nickname: data.nickname,
       name: data.name,
       description: data.description,
       backgroundId: Number(data.backgroundId),
       password: hashedPassword,
-      point: {
-        create: {},
-      },
+      point: { create: {} },
     },
     select: {
       id: true,
@@ -21,15 +27,12 @@ export const createStudy = async (data) => {
       name: true,
       description: true,
       background: {
-        select: {
-          id: true,
-          name: true,
-          imageUrl: true,
-        },
+        select: { id: true, name: true, imageUrl: true },
       },
       createdAt: true,
     },
   });
+  return { ...study, background: normalizeBackground(study.background) };
 };
 
 export const findAllStudies = async ({ page, limit, keyword, order }) => {
@@ -87,7 +90,7 @@ export const findAllStudies = async ({ page, limit, keyword, order }) => {
   });
 
   return {
-    items,
+    items: items.map((s) => ({ ...s, background: normalizeBackground(s.background) })),
     totalCount,
     page,
     limit,
@@ -95,7 +98,7 @@ export const findAllStudies = async ({ page, limit, keyword, order }) => {
 };
 
 export const findStudyById = async (id) => {
-  return await prisma.study.findUnique({
+  const study = await prisma.study.findUnique({
     where: { id },
     select: {
       id: true,
@@ -103,16 +106,14 @@ export const findStudyById = async (id) => {
       name: true,
       description: true,
       background: {
-        select: {
-          id: true,
-          name: true,
-          imageUrl: true,
-        },
+        select: { id: true, name: true, imageUrl: true },
       },
       createdAt: true,
       updatedAt: true,
     },
   });
+  if (!study) return null;
+  return { ...study, background: normalizeBackground(study.background) };
 };
 
 export const verifyStudyPassword = async (id, password) => {
@@ -158,7 +159,7 @@ export const updateStudy = async (id, data) => {
     }),
   };
 
-  return await prisma.study.update({
+  const updated = await prisma.study.update({
     where: { id },
     data: updateData,
     select: {
@@ -167,15 +168,12 @@ export const updateStudy = async (id, data) => {
       name: true,
       description: true,
       background: {
-        select: {
-          id: true,
-          name: true,
-          imageUrl: true,
-        },
+        select: { id: true, name: true, imageUrl: true },
       },
       updatedAt: true,
     },
   });
+  return { ...updated, background: normalizeBackground(updated.background) };
 };
 
 export const deleteStudy = async (id, password) => {

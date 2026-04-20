@@ -1,5 +1,5 @@
 import * as habitService from '../services/habit.service.js';
-import { success, fail } from '../utils/response.js';
+import { success } from '../utils/response.js';
 
 export const createHabit = async (req, res, next) => {
   try {
@@ -17,7 +17,6 @@ export const createHabit = async (req, res, next) => {
 export const getHabits = async (req, res, next) => {
   try {
     const { studyId } = req.query;
-    if (!studyId) return fail(res, 'BAD_REQUEST', 'studyId가 필요합니다.', 400);
     const items = await habitService.findHabitsByStudyId(Number(studyId));
     success(res, { items });
   } catch (err) {
@@ -49,11 +48,7 @@ export const upsertHabitRecord = async (req, res, next) => {
   try {
     const { habitId } = req.params;
     const { date, completed } = req.body;
-    const record = await habitService.upsertHabitRecord(
-      Number(habitId),
-      date,
-      completed
-    );
+    const record = await habitService.upsertHabitRecord(Number(habitId), date, completed);
     success(res, record);
   } catch (err) {
     next(err);
@@ -62,13 +57,9 @@ export const upsertHabitRecord = async (req, res, next) => {
 
 export const getHabitRecords = async (req, res, next) => {
   try {
-    const { weekStart, weekEnd } = req.query;
     const { studyId } = req.params;
-    const items = await habitService.findHabitRecords(
-      Number(studyId),
-      weekStart,
-      weekEnd
-    );
+    const { weekStart, weekEnd } = req.query;
+    const items = await habitService.findHabitRecords(Number(studyId), weekStart, weekEnd);
     success(res, { weekStart, weekEnd, items });
   } catch (err) {
     next(err);
