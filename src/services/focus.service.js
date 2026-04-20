@@ -47,9 +47,8 @@ export async function createFocusSessionByStudyId(
   const actualMinutes = calculateActualMinutes(sessionData, serverCompletedAt);
 
   // 1차 보상: 설정 시간 완료 시 기본 3점 + 설정시간 10분당 1점
-  const firstRewardPoint = actualMinutes >= durationMinutes
-    ? 3 + Math.floor(durationMinutes / 10)
-    : 0;
+  const firstRewardPoint =
+    actualMinutes >= durationMinutes ? 3 + Math.floor(durationMinutes / 10) : 0;
 
   // 2차 보상: 초과 시간 10분당 1점
   const overtimeMinutes = Math.max(actualMinutes - durationMinutes, 0);
@@ -70,23 +69,46 @@ export async function createFocusSessionByStudyId(
 
     let point;
 
-    if (study.point) {
-      point = await tx.point.update({
-        where: { studyId },
-        data: {
-          totalPoint: {
-            increment: totalEarned,
-          },
+    // if (study.point) {
+    //   point = await tx.point.update({
+    //     where: { studyId },
+    //     data: {
+    //       totalPoint: {
+    //         increment: totalEarned,
+    //       },
+    //     },
+    //   });
+    // } else {
+    //   point = await tx.point.create({
+    //     data: {
+    //       studyId,
+    //       totalPoint: totalEarned,
+    //     },
+    //   });
+    // }
+
+    point = await tx.point.upsert({
+      where: { studyId },
+      update: {
+        totalPoint: {
+          increment: totalEarned,
         },
-      });
-    } else {
-      point = await tx.point.create({
-        data: {
-          studyId,
-          totalPoint: totalEarned,
-        },
-      });
-    }
+      },
+      create: {
+        studyId,
+        totalPoint: totalEarned,
+      },
+    });
+
+    // 포인트 로그 추가
+    await tx.pointLog.create({
+      data: {
+        studyId,
+        amount: totalEarned,
+        reason: 'FOCUS_SESSION_COMPLETE',
+        focusSessionId: focusSession.id,
+      },
+    });
 
     return {
       focusSession,

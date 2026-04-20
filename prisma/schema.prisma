@@ -20,6 +20,7 @@ model Study {
   focusSessions  FocusSession[]
   habits         Habit[]
   point          Point?
+  pointLogs      PointLog[]
   background     Background      @relation(fields: [backgroundId], references: [id])
 
   @@index([backgroundId])
@@ -35,6 +36,21 @@ model Point {
   updatedAt  DateTime @updatedAt
   study      Study    @relation(fields: [studyId], references: [id], onDelete: Cascade)
   
+}
+
+
+model PointLog {
+  id             Int           @id @default(autoincrement())
+  studyId        Int           
+  amount         Int
+  reason         String
+  focusSessionId Int?          
+  createdAt      DateTime      @default(now())
+
+  study          Study         @relation(fields: [studyId], references: [id], onDelete: Cascade)
+  focusSession   FocusSession? @relation(fields: [focusSessionId], references: [id])
+
+  @@index([studyId])
 }
 
 model Background {
@@ -79,6 +95,7 @@ model FocusSession {
   startedAt   DateTime
   completedAt DateTime
   study       Study    @relation(fields: [studyId], references: [id], onDelete: Cascade)
+  pointLogs      PointLog[]
 
   @@index([studyId, startedAt])
 
