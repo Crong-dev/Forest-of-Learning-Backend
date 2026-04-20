@@ -17,10 +17,7 @@ export const addEmojiReaction = async (req, res, next) => {
 export const getEmojiReactions = async (req, res, next) => {
   try {
     const { studyId } = req.query;
-    if (!studyId) return fail(res, 'BAD_REQUEST', 'studyId가 필요합니다.', 400);
-    const items = await emojiService.findEmojiReactionsByStudyId(
-      Number(studyId)
-    );
+    const items = await emojiService.findEmojiReactionsByStudyId(Number(studyId));
     success(res, { items });
   } catch (err) {
     next(err);

@@ -4,8 +4,6 @@ import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 import errorHandler from './middlewares/errorHandler.js';
 import backgroundRouter from './routes/background.routes.js';
 import studyRouter from './routes/study.routes.js';
@@ -15,6 +13,9 @@ import emojiRouter from './routes/emoji.routes.js';
 import pointRouter from './routes/point.routes.js';
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
