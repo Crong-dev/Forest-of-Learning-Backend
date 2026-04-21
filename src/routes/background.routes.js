@@ -1,5 +1,8 @@
 import express from 'express';
-import { getBackgrounds, getBackgroundById } from '../controllers/background.controller.js';
+import {
+  getBackgrounds,
+  getBackgroundById,
+} from '../controllers/background.controller.js';
 
 const router = express.Router();
 

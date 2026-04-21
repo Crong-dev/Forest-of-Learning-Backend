@@ -53,6 +53,21 @@ model PointLog {
   @@index([studyId])
 }
 
+
+model PointLog {
+  id             Int           @id @default(autoincrement())
+  studyId        Int           
+  amount         Int
+  reason         String
+  focusSessionId Int?          
+  createdAt      DateTime      @default(now())
+
+  study          Study         @relation(fields: [studyId], references: [id], onDelete: Cascade)
+  focusSession   FocusSession? @relation(fields: [focusSessionId], references: [id])
+
+  @@index([studyId])
+}
+
 model Background {
   id        Int      @id @default(autoincrement())
   name      String
@@ -72,7 +87,6 @@ model Habit {
   habitRecords HabitRecord[]
 
   @@index([studyId])
-
 }
 
 model HabitRecord {
@@ -88,17 +102,15 @@ model HabitRecord {
 }
 
 model FocusSession {
-  id          Int      @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   studyId     Int
   duration    Int
-  earnedPoint Int      @default(0)
+  earnedPoint Int        @default(0)
   startedAt   DateTime
   completedAt DateTime
   study       Study    @relation(fields: [studyId], references: [id], onDelete: Cascade)
-  pointLogs      PointLog[]
 
   @@index([studyId, startedAt])
-
 }
 
 model EmojiReaction {
@@ -110,4 +122,17 @@ model EmojiReaction {
   study     Study    @relation(fields: [studyId], references: [id], onDelete: Cascade)
 
   @@unique([studyId, emoji])
+}
+
+model PointLog {
+  id             Int           @id @default(autoincrement())
+  studyId        Int
+  amount         Int
+  reason         String
+  focusSessionId Int?
+  createdAt      DateTime      @default(now())
+  FocusSession   FocusSession? @relation(fields: [focusSessionId], references: [id])
+  Study          Study         @relation(fields: [studyId], references: [id], onDelete: Cascade)
+
+  @@index([studyId])
 }
