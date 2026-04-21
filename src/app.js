@@ -36,7 +36,7 @@ app.use(
       }
     },
     credentials: true,
-  })
+  }),
 );
 app.use(
   session({
@@ -48,7 +48,7 @@ app.use(
       secure: isProduction,
       maxAge: 24 * 60 * 60 * 1000,
     },
-  })
+  }),
 );
 app.use(express.json());
 app.use('/images', express.static(join(__dirname, 'public/images')));
