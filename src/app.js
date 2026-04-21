@@ -1,9 +1,11 @@
 import express from 'express';
 import cors from 'cors';
+import session from 'express-session';
 import dotenv from 'dotenv';
-import errorHandler from './middlewares/errorHandler.js';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 
-import userRoutes from './routes/user.routes.js';
+import errorHandler from './middlewares/errorHandler.js';
 import backgroundRouter from './routes/background.routes.js';
 import studyRouter from './routes/study.routes.js';
 import habitRouter from './routes/habit.routes.js';
@@ -13,11 +15,43 @@ import pointRouter from './routes/point.routes.js';
 
 dotenv.config();
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+const isProduction = process.env.NODE_ENV === 'production';
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map((o) => o.trim())
+  : [];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!isProduction || !origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS: origin ${origin} not allowed`));
+      }
+    },
+    credentials: true,
+  })
+);
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'forest-dev-secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: isProduction,
+      maxAge: 24 * 60 * 60 * 1000,
+    },
+  })
+);
 app.use(express.json());
+app.use('/images', express.static(join(__dirname, 'public/images')));
 
 app.get('/', (_req, res) => {
   res.json({ message: 'Backend server is running.' });
@@ -27,7 +61,6 @@ app.get('/api/test', (_req, res) => {
   res.json({ message: 'API 연결 성공' });
 });
 
-app.use('/users', userRoutes);
 app.use('/backgrounds', backgroundRouter);
 app.use('/studies', studyRouter);
 app.use('/habits', habitRouter);
