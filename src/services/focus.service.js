@@ -60,7 +60,7 @@ export async function createFocusSessionByStudyId(
     const focusSession = await tx.focusSession.create({
       data: {
         studyId,
-        duration: sessionData.durationSeconds,
+        duration: sessionData.totalTargetSeconds,
         earnedPoint: totalEarned,
         startedAt: new Date(sessionData.startedAt),
         completedAt: serverCompletedAt,
