@@ -115,6 +115,12 @@ export const verifyStudyPassword = async (req, res, next) => {
       );
     }
 
+    if (!req.session.verifiedStudies) req.session.verifiedStudies = [];
+    const sid = Number(studyId);
+    if (!req.session.verifiedStudies.includes(sid)) {
+      req.session.verifiedStudies.push(sid);
+    }
+
     success(res, { verified: true }, '비밀번호 확인 성공');
   } catch (err) {
     next(err);
