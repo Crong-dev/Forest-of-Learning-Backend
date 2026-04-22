@@ -12,6 +12,7 @@ import habitRouter from './routes/habit.routes.js';
 import focusRouter from './routes/focus.routes.js';
 import emojiRouter from './routes/emoji.routes.js';
 import pointRouter from './routes/point.routes.js';
+import translateRouter from './routes/translate.router.js';
 
 dotenv.config();
 
@@ -26,7 +27,7 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',').map((o) => o.trim())
   : [];
 
-// 프록시 환경에서 secure cookie 사용 가능하도록 설정
+// 프록시 환경(Render 등)에서 secure cookie 인식
 if (isProduction) {
   app.set('trust proxy', 1);
 }
@@ -76,6 +77,7 @@ app.use('/habits', habitRouter);
 app.use('/focuses', focusRouter);
 app.use('/emojis', emojiRouter);
 app.use('/points', pointRouter);
+app.use('/translate', translateRouter);
 
 app.use((_req, res) => {
   res.status(404).json({
