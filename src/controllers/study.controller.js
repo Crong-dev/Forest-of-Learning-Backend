@@ -107,6 +107,8 @@ export const verifyStudyPassword = async (req, res, next) => {
     const studyId = Number(req.params.studyId);
     const { password } = req.body;
 
+    console.log('[verifyStudyPassword] start', { studyId });
+
     if (Number.isNaN(studyId)) {
       return fail(res, 'VALIDATION_ERROR', '유효한 studyId가 아닙니다.', 400);
     }
@@ -116,12 +118,14 @@ export const verifyStudyPassword = async (req, res, next) => {
     }
 
     const study = await studyService.findStudyById(studyId);
+    console.log('[verifyStudyPassword] study found:', !!study);
 
     if (!study) {
       return fail(res, 'NOT_FOUND', '스터디를 찾을 수 없습니다.', 404);
     }
 
     const result = await studyService.verifyStudyPassword(studyId, password);
+    console.log('[verifyStudyPassword] verify result:', result);
 
     if (result?.error === 'NOT_FOUND') {
       return fail(res, 'NOT_FOUND', '스터디를 찾을 수 없습니다.', 404);
@@ -137,9 +141,18 @@ export const verifyStudyPassword = async (req, res, next) => {
       req.session.verifiedStudies.push(studyId);
     }
 
-    req.session.save((err) => {
-      if (err) return next(err);
+    console.log(
+      '[verifyStudyPassword] before session.save',
+      req.session.verifiedStudies
+    );
 
+    req.session.save((err) => {
+      if (err) {
+        console.error('[verifyStudyPassword] session save error:', err);
+        return next(err);
+      }
+
+      console.log('[verifyStudyPassword] session saved');
       return success(
         res,
         { studyId, verified: true },
@@ -148,6 +161,7 @@ export const verifyStudyPassword = async (req, res, next) => {
       );
     });
   } catch (err) {
+    console.error('[verifyStudyPassword] catch error:', err);
     next(err);
   }
 };
