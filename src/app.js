@@ -61,10 +61,11 @@ app.use(
     secret: process.env.SESSION_SECRET || 'forest-dev-secret',
     resave: false,
     saveUninitialized: false,
+    proxy: true,
     cookie: {
       httpOnly: true,
       secure: isProduction,
-      sameSite: isProduction ? 'none' : 'lax',
+      sameSite: 'none',
       maxAge: 24 * 60 * 60 * 1000,
     },
   })
