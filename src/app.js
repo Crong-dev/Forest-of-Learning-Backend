@@ -77,7 +77,7 @@ app.use('/habits', habitRouter);
 app.use('/focuses', focusRouter);
 app.use('/emojis', emojiRouter);
 app.use('/points', pointRouter);
-app.use('/translate', translateRouter);
+app.use(translateRouter);
 
 app.use((_req, res) => {
   res.status(404).json({
