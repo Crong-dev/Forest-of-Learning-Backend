@@ -20,7 +20,11 @@ const router = express.Router();
 
 router.post('/', validateCreateStudy, createStudy);
 router.get('/', getStudies);
-router.get('/:studyId/verify-session', numericParams('studyId'), checkStudySession);
+router.get(
+  '/:studyId/verify-session',
+  numericParams('studyId'),
+  checkStudySession
+);
 router.get('/:studyId', getStudyById);
 router.post('/:studyId/verify-password', passwordLimiter, verifyStudyPassword);
 router.patch('/:studyId', validateUpdateStudy, updateStudy);
