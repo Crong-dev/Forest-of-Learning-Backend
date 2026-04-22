@@ -52,24 +52,24 @@ app.use(
 
 app.use(express.json());
 
-app.use(
-  session({
-    store: new PgSession({
-      conString: process.env.DATABASE_URL,
-      tableName: 'session',
-      createTableIfMissing: true,
-    }),
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? 'none' : 'lax',
-      maxAge: 24 * 60 * 60 * 1000,
-    },
-  })
-);
+// app.use(
+//   session({
+//     store: new PgSession({
+//       conString: process.env.DATABASE_URL,
+//       tableName: 'session',
+//       createTableIfMissing: true,
+//     }),
+//     secret: process.env.SESSION_SECRET,
+//     resave: false,
+//     saveUninitialized: false,
+//     cookie: {
+//       httpOnly: true,
+//       secure: isProduction,
+//       sameSite: isProduction ? 'none' : 'lax',
+//       maxAge: 24 * 60 * 60 * 1000,
+//     },
+//   })
+// );
 
 app.use('/images', express.static(join(__dirname, 'public/images')));
 
