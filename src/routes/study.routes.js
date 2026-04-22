@@ -14,12 +14,20 @@ import {
   validateDeleteStudy,
 } from '../middlewares/validateStudy.js';
 import { passwordLimiter } from '../middlewares/rateLimiter.js';
+import { numericParams } from '../middlewares/validateParams.js';
+
 const router = express.Router();
+
 router.post('/', validateCreateStudy, createStudy);
 router.get('/', getStudies);
+router.get(
+  '/:studyId/verify-session',
+  numericParams('studyId'),
+  checkStudySession
+);
 router.get('/:studyId', getStudyById);
-router.get('/:studyId/check-session', checkStudySession);
 router.post('/:studyId/verify-password', passwordLimiter, verifyStudyPassword);
 router.patch('/:studyId', validateUpdateStudy, updateStudy);
 router.delete('/:studyId', passwordLimiter, validateDeleteStudy, deleteStudy);
+
 export default router;

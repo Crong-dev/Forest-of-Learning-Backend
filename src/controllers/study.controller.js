@@ -94,36 +94,42 @@ export const getStudyById = async (req, res, next) => {
 };
 export const verifyStudyPassword = async (req, res, next) => {
   try {
-    const { studyId } = req.params;
+    const studyId = Number(req.params.studyId);
     const { password } = req.body;
+
+    if (Number.isNaN(studyId)) {
+      return fail(res, 'VALIDATION_ERROR', '유효한 studyId가 아닙니다.', 400);
+    }
+
     if (!password) {
       return fail(res, 'VALIDATION_ERROR', '비밀번호를 입력해주세요.', 400);
     }
-    const result = await studyService.verifyStudyPassword(
-      Number(studyId),
-      password
-    );
+
+    const result = await studyService.verifyStudyPassword(studyId, password);
+
     if (result?.error === 'NOT_FOUND') {
-      return fail(res, 'NOT_FOUND', '스터디가 존재하지 않습니다.', 404);
-    }
-    if (result?.error === 'INVALID_PASSWORD') {
-      return fail(
-        res,
-        'VALIDATION_ERROR',
-        '비밀번호가 일치하지 않습니다.',
-        400
-      );
-    }
-    if (!req.session.verifiedStudies) req.session.verifiedStudies = [];
-    const sid = Number(studyId);
-    if (!req.session.verifiedStudies.includes(sid)) {
-      req.session.verifiedStudies.push(sid);
+      return fail(res, 'NOT_FOUND', '스터디를 찾을 수 없습니다.', 404);
     }
 
-    success(res, { verified: true }, '비밀번호 확인 성공');
+    if (result?.error === 'INVALID_PASSWORD') {
+      return fail(res, 'UNAUTHORIZED', '비밀번호가 일치하지 않습니다.', 401);
+    }
+
+    req.session.verifiedStudies = req.session.verifiedStudies || [];
+
+    if (!req.session.verifiedStudies.includes(studyId)) {
+      req.session.verifiedStudies.push(studyId);
+    }
+
     req.session.save((err) => {
       if (err) return next(err);
-      success(res, { verified: true }, '비밀번호 확인 성공');
+
+      return success(
+        res,
+        { studyId, verified: true },
+        '비밀번호 인증에 성공했습니다.',
+        200
+      );
     });
   } catch (err) {
     next(err);
