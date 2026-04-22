@@ -1,6 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-import session from 'express-session';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
@@ -36,21 +35,9 @@ app.use(
         callback(new Error(`CORS: origin ${origin} not allowed`));
       }
     },
-    credentials: true,
   })
 );
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || 'forest-dev-secret',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      secure: isProduction,
-      maxAge: 24 * 60 * 60 * 1000,
-    },
-  })
-);
+
 app.use(express.json());
 app.use('/images', express.static(join(__dirname, 'public/images')));
 
@@ -68,7 +55,7 @@ app.use('/habits', habitRouter);
 app.use('/focuses', focusRouter);
 app.use('/emojis', emojiRouter);
 app.use('/points', pointRouter);
-app.use(translateRouter);
+app.use('/translate', translateRouter);
 
 // 404 fallback처리
 app.use((_req, res) => {
