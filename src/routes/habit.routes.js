@@ -7,14 +7,16 @@ import {
   upsertHabitRecord,
   getHabitRecords,
 } from '../controllers/habit.controller.js';
+import { numericParams } from '../middlewares/validateParams.js';
+import { verifyStudyPasswordByHabitId } from '../middlewares/verifyPassword.js';
 
 const router = express.Router();
 
-router.post('/', createHabit);
-router.get('/', getHabits);
-router.patch('/:habitId', updateHabit);
-router.delete('/:habitId', deleteHabit);
-router.post('/:habitId/records', upsertHabitRecord);
-router.get('/:habitId/records', getHabitRecords);
+router.post('/', numericParams('studyId'), createHabit);
+router.get('/', numericParams('studyId'), getHabits);
+router.patch('/:habitId', numericParams('habitId'), verifyStudyPasswordByHabitId, updateHabit);
+router.delete('/:habitId', numericParams('habitId'), verifyStudyPasswordByHabitId, deleteHabit);
+router.post('/:habitId/records', numericParams('habitId'), upsertHabitRecord);
+router.get('/:studyId/records', numericParams('studyId'), getHabitRecords);
 
 export default router;

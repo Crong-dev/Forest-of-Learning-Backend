@@ -38,9 +38,35 @@ export const upsertHabitRecord = async (habitId, date, completed) => {
   });
 };
 
-export const findHabitRecords = async (habitId) => {
-  return await prisma.habitRecord.findMany({
-    where: { habitId },
-    orderBy: { date: 'asc' },
+export const findHabitRecords = async (studyId, weekStart, weekEnd) => {
+  const habitsWithRecords = await prisma.habit.findMany({
+    where: {
+      studyId: studyId,
+    },
+    include: {
+      habitRecords: {
+        where: {
+          date: {
+            gte: new Date(weekStart),
+            lte: new Date(weekEnd),
+          },
+        },
+      },
+    },
+  });
+
+  return habitsWithRecords.map((habit) => {
+    const dates = habit.habitRecords.reduce((acc, record) => {
+      const dateKey = record.date.toISOString().split('T')[0];
+
+      acc[dateKey] = record.completed;
+      return acc;
+    }, {});
+
+    return {
+      habitId: habit.id,
+      habitName: habit.name,
+      dates: dates,
+    };
   });
 };
