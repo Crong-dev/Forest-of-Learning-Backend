@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import session from 'express-session';
+import connectPgSimple from 'connect-pg-simple';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
@@ -23,6 +24,9 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 const isProduction = process.env.NODE_ENV === 'production';
+
+const PgSession = connectPgSimple(session);
+
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',').map((o) => o.trim())
   : [];
@@ -49,6 +53,11 @@ app.use(express.json());
 
 app.use(
   session({
+    store: new PgSession({
+      conString: process.env.DATABASE_URL,
+      tableName: 'session',
+      createTableIfMissing: true,
+    }),
     secret: process.env.SESSION_SECRET || 'forest-dev-secret',
     resave: false,
     saveUninitialized: false,
