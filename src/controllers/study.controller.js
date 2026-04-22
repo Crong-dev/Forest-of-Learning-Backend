@@ -75,6 +75,12 @@ export const deleteHabit = async (req, res, next) => {
   }
 };
 
+export const checkStudySession = (req, res) => {
+  const studyId = Number(req.params.studyId);
+  const verified = req.session.verifiedStudies?.includes(studyId) ?? false;
+  return success(res, { verified });
+};
+
 export const upsertHabitRecord = async (req, res, next) => {
   try {
     const { habitId } = req.params;

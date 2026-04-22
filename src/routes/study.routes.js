@@ -5,6 +5,7 @@ import {
   getStudyById,
   verifyStudyPassword,
   checkStudySession,
+  checkStudySession,
   updateStudy,
   deleteStudy,
 } from '../controllers/study.controller.js';
