@@ -8,6 +8,9 @@ export const passwordLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: {
-    error: { code: 'TOO_MANY_REQUESTS', message: '비밀번호를 5회 이상 틀렸습니다. 5분 후 다시 시도해주세요.' },
+    error: {
+      code: 'TOO_MANY_REQUESTS',
+      message: '비밀번호를 5회 이상 틀렸습니다. 5분 후 다시 시도해주세요.',
+    },
   },
 });
